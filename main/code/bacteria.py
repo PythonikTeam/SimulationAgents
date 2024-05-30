@@ -4,8 +4,8 @@ import sys
 import time
 import threading
 import logging
+from typing import Optional
 
-import GUI
 from genes import Gene, GeneCluster
 
 mutex = threading.Lock()
@@ -20,7 +20,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class Bacteria:
-    def __init__(self, animals, coordinates, foodCoordinates, foodCosts, waterCoordinates, waterCosts, speed):
+    def __init__(self, animals: Optional[list], coordinates, foodCoordinates,
+                 foodCosts, waterCoordinates, waterCosts, speed, gui=True):
+        """Init function"""
+        self.status = 1
         self.hungry = 0
         self.thirst = 0
         self.need = 0
@@ -36,15 +39,20 @@ class Bacteria:
         self.nowTick = 0
         self.diedTime = 1000
         self.genes = GeneCluster([self.speed, self.tickWaterCost, self.tickFoodCost])
+        self.gui = gui
 
-        self.GUI = GUI.GUI(self.foodCoordinates, self.waterCoordinates, 4, 9)
-        self.GUI.createGUI()
+        if self.gui:
+            import GUI
 
-        for j in range(0, len(animals.keys())):
-            print(self.animalsCoordinates)
-            self.animalsCoordinates.append(self.animals["animal" + str(j)].coordinates)
+            self.GUI = GUI.GUI(self.foodCoordinates, self.waterCoordinates, 4, 10)
+            self.GUI.createGUI()
+
+            for j in range(0, len(animals.keys())):
+                # print(self.animalsCoordinates)
+                self.animalsCoordinates.append(self.animals["animal" + str(j)].coordinates)
 
     def __str__(self):
+        """Dunder(magic) method"""
         return ("Simulation Agents 1.11.8V""\n"
                 f"Hungry - {self.hungry}""\n"
                 f"Thirst - {self.thirst}""\n"
@@ -55,20 +63,24 @@ class Bacteria:
                 f"Water coordinates - {self.waterCoordinates}""\n"
                 "___________________________")
 
-    def calcDistance(self, targetCoordinates: list[int]) -> list[int]:
+    def calcDistance(self, targetCoordinates):
+        """Function for calculating the distance between 2 points"""
         distanceToTarget = round(math.sqrt(abs(self.coordinates[0] - targetCoordinates[0]) ** 2 + abs(
             self.coordinates[1] - targetCoordinates[1]) ** 2))
         return distanceToTarget
 
     def everyTick(self):
+        """Function, what works through every tick"""
         if self.hungry >= 200 or self.thirst >= 200:
             self.diedTime = self.nowTick
+            self.status = 0
             sys.exit()
         self.nowTick += 1
         self.hungry += self.tickFoodCost.value
         self.thirst += self.tickWaterCost.value
 
     def detectNeed(self):
+        """Function for detecting bacteria`s need."""
         if self.hungry == self.thirst or self.thirst == 0 and self.hungry == 0:
             randint = random.randint(0, 1)
             if randint == 0:
@@ -94,7 +106,7 @@ class Bacteria:
             elif self.need == 2:
                 pass
 
-    def move(self, targetCoordinates: list[int]) -> None:
+    def move(self, targetCoordinates):
         """Function for agent move"""
         coordinates = []
         distance = self.calcDistance(targetCoordinates)
@@ -112,17 +124,25 @@ class Bacteria:
                 if self.doMove(targetCoordinates, speedX, speedY) == 1:
                     break
 
+                if self.gui:
+                    mutex.acquire()
+                    self.GUI.printGUI([*self.animalsCoordinates, *self.coordinates])
+                    mutex.release()
+                    time.sleep(0.1)
+
+                else:
+                    pass
+
+        else:
+            if self.gui:
                 mutex.acquire()
                 self.GUI.printGUI([*self.animalsCoordinates, *self.coordinates])
                 mutex.release()
-                time.sleep(0.1)
-
-        else:
-            mutex.acquire()
-            self.GUI.printGUI([*self.animalsCoordinates, *self.coordinates])
-            mutex.release()
+            else:
+                pass
 
     def doMove(self, targetCoordinates, speedX, speedY):
+        """Function, what moves the bacteria"""
         distanceWhile = self.calcDistance(targetCoordinates)
 
         if round(distanceWhile) < self.speed.value:
@@ -142,6 +162,7 @@ class Bacteria:
             self.coordinates[1] = self.coordinates[1] - speedY
 
     def findDirection(self):
+        """Function for finding a direction"""
         if self.coordinates[0] + 10 > 600:
             self.move([self.coordinates[0] - self.speed.value, self.coordinates[1]])
             self.direction = random.choice([LEFT, UP, DOWN])
@@ -167,7 +188,8 @@ class Bacteria:
         elif self.direction == UP:
             self.move([self.coordinates[0], self.coordinates[1] - self.speed.value])
 
-    def vision(self, Coordinates: list[int]) -> int:
+    def vision(self, Coordinates):
+        """Function to check whether a point is in the field of view"""
         returnValue = {}
 
         for x, y in zip(Coordinates[::2], Coordinates[1::2]):
@@ -177,6 +199,7 @@ class Bacteria:
         return returnValue
 
     def goFood(self) -> None:
+        """Function for bacteria going to food"""
         distanceToCoordinatesList = self.vision(self.foodCoordinates)
 
         if distanceToCoordinatesList:
@@ -206,6 +229,7 @@ class Bacteria:
                 self.hungry -= 30
 
     def goDrink(self) -> None:
+        """Function for bacteria going to water"""
         distanceToCoordinatesList = self.vision(self.waterCoordinates)
 
         if distanceToCoordinatesList:
@@ -237,4 +261,3 @@ class Bacteria:
 
     def goBreed(self) -> None:
         pass
-

@@ -15,20 +15,17 @@ numberAnimals = 10
 
 
 def firstClass(animals, coordinates, foodCoordinates, waterCoordinates):
-    animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 1,
-                               waterCoordinates, 2, 10)
+    animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 1, waterCoordinates, 2, 10)
     return animal
 
 
 def secondClass(animals, coordinates, foodCoordinates, waterCoordinates):
-    animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 0.5,
-                               waterCoordinates, 2, 5)
+    animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 0.5, waterCoordinates, 2, 5)
     return animal
 
 
 def thirstClass(animals, coordinates, foodCoordinates, waterCoordinates):
-    animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 1,
-                               waterCoordinates, 1, 5)
+    animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 1, waterCoordinates, 1, 5)
     return animal
 
 

@@ -70,7 +70,7 @@ class GUI:
         # self.sc.blit(text1, (10, 50))
         # self.sc.blit(text2, (10, 70))
         # self.sc.blit(text3, (10, 90))
-        print(animalCoordinates)
+        # print(animalCoordinates)
 
         for r in range(0, len(animalCoordinates) - 2):
             self.rectAnimal["rectAnimal" + str(r)].x = animalCoordinates[r][0]
