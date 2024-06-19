@@ -1,48 +1,52 @@
 import random
-import time
-import threading
+import multiprocessing as mp
+import pygame
 
+import GUI
 import bacteria
 import environment
 
-environment = environment.Environment(200)
+environment = environment.Environment(5)
 environment.createEnvironment()
 
-animals = {}
+animals = []
+animalsCoordinates = []
 
-threads = {}
-numberAnimals = 10
+processes = []
+numberAnimals = 5
 
 
-def firstClass(animals, coordinates, foodCoordinates, waterCoordinates):
+def firstClass(animals, coordinates, foodCoordinates, waterCoordinates): #Первый класс
     animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 1, waterCoordinates, 2, 10)
     return animal
 
 
-def secondClass(animals, coordinates, foodCoordinates, waterCoordinates):
+def secondClass(animals, coordinates, foodCoordinates, waterCoordinates): #Второй класс
     animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 0.5, waterCoordinates, 2, 5)
     return animal
 
 
-def thirstClass(animals, coordinates, foodCoordinates, waterCoordinates):
+def thirstClass(animals, coordinates, foodCoordinates, waterCoordinates): #Третий класс
     animal = bacteria.Bacteria(animals, coordinates, foodCoordinates, 1, waterCoordinates, 1, 5)
     return animal
 
 
-# time.sleep(3)
+# Make a simulation of phage
 
-for i in range(0, numberAnimals):
-    animals["animal" + str(i)] = thirstClass(animals, [random.randint(10, 590), random.randint(10, 590)],
+for i in range(0, numberAnimals): #Создание объектов класса бактерии
+    animals.append(thirstClass(animals, [random.randint(10, 590), random.randint(10, 590)],
                                              environment.foodCoordinates,
-                                             environment.waterCoordinates)
+                                             environment.waterCoordinates))
 
-for j in range(0, numberAnimals - 3):
-    threads[j] = threading.Thread(target=animals["animal" + str(j)].main)  # , args=(j))
+for i in animals:
+    animalsCoordinates.append(i.coordinates)
 
-for j in range(0, numberAnimals - 3):
-    threads[j].start()
+window = GUI.GUI(environment.foodCoordinates, environment.waterCoordinates, 5, 10)
+window.createGUI()
+p = mp.Pool(16)
 
-# print(f"{environment.foodCoordinates, environment.waterCoordinates} - Environment data.")
-
-for j in range(0, numberAnimals - 3):
-    threads[j].join()
+while 1:
+    p.map_async(func=bacteria.Bacteria.main,iterable=animals)
+    window.printGUI(animalsCoordinates)
+    p.close()
+    p.join()
