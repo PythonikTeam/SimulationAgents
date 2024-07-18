@@ -31,8 +31,6 @@ def thirstClass(animals, coordinates, foodCoordinates, waterCoordinates): #Тр�
     return animal
 
 
-# Make a simulation of phage
-
 for i in range(0, numberAnimals): #Создание объектов класса бактерии
     animals.append(thirstClass(animals, [random.randint(10, 590), random.randint(10, 590)],
                                              environment.foodCoordinates,
