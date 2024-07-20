@@ -2,7 +2,7 @@ import pygame
 import pygame.surface
 import sys
 
-BLACK = (2, 1, 18)
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 100, 0)
 BLUE = (0, 191, 255)
@@ -52,7 +52,7 @@ class GUI:
             if i.type == pygame.QUIT:
                 sys.exit()
 
-        for r in range(0, len(animalCoordinates) - 2):
+        for r in range(0, len(animalCoordinates)):
             self.rectAnimal["rectAnimal" + str(r)].x = animalCoordinates[r][0]
             self.rectAnimal["rectAnimal" + str(r)].y = animalCoordinates[r][1]
 
@@ -62,8 +62,7 @@ class GUI:
             self.sc.blit(self.food, self.rectFood["rectFood" + str(j)])
             self.sc.blit(self.water, self.rectWater["rectWater" + str(j)])
 
-        for r in range(0, self.animalsAmount - 2):
+        for r in range(0, self.animalsAmount):
             self.sc.blit(self.animalObject, self.rectAnimal["rectAnimal" + str(r)])
 
         pygame.display.update()
-    #Тут все и так ясно

@@ -6,6 +6,7 @@ import threading
 import logging
 from typing import Optional
 
+import GUI
 from genes import Gene, GeneCluster
 
 mutex = threading.Lock()
@@ -15,7 +16,6 @@ DOWN = 2
 RIGHT = -1
 LEFT = 1
 
-
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -23,6 +23,7 @@ class Bacteria:
     def __init__(self, animals: Optional[list], coordinates, foodCoordinates,
                  foodCosts, waterCoordinates, waterCosts, speed):
         """Init function"""
+        logging.debug("New entity registered")
         self.status = 1
         self.hungry = 0
         self.thirst = 0
@@ -39,9 +40,10 @@ class Bacteria:
         self.nowTick = 0
         self.diedTime = 1000
         self.genes = GeneCluster([self.speed, self.tickWaterCost, self.tickFoodCost])
+
     def __str__(self):
         """Dunder(magic) method str"""
-        return ("Simulation Agents 1.11.8V""\n"
+        return ("Simulation Agents 1.9.0V""\n"
                 f"Hungry - {self.hungry}""\n"
                 f"Thirst - {self.thirst}""\n"
                 f"Need - {self.need}""\n"
@@ -49,13 +51,13 @@ class Bacteria:
                 f"Coordinates - {self.coordinates}""\n"
                 f"Food coordinates - {self.foodCoordinates}""\n"
                 f"Water coordinates - {self.waterCoordinates}""\n"
-                "___________________________") #Для вывода через print
+                "___________________________")  #Для вывода через print
 
     def calcDistance(self, targetCoordinates):
         """Function for calculating the distance between 2 points"""
         distanceToTarget = round(math.sqrt(abs(self.coordinates[0] - targetCoordinates[0]) ** 2 + abs(
             self.coordinates[1] - targetCoordinates[1]) ** 2))
-        return distanceToTarget #Евклидово расстояние
+        return distanceToTarget  #Евклидово расстояние
 
     def everyTick(self):
         """Function, what works through every tick"""
@@ -65,7 +67,7 @@ class Bacteria:
             sys.exit()
         self.nowTick += 1
         self.hungry += self.tickFoodCost.value
-        self.thirst += self.tickWaterCost.value #Добавление голода, жажды и времени
+        self.thirst += self.tickWaterCost.value  #Добавление голода, жажды и времени
 
     def detectNeed(self):
         """Function for detecting bacteria`s need."""
@@ -80,7 +82,7 @@ class Bacteria:
         if self.thirst > self.hungry:
             self.need = 0
         else:
-            self.need = 1 #Задавание нужды через базовые ветвления
+            self.need = 1  #Задавание нужды через базовые ветвления
 
     def main(self):
         """Main function for starting the simulation"""
@@ -91,7 +93,7 @@ class Bacteria:
         elif self.need == 1:
             self.goFood()
         elif self.need == 2:
-            pass #Бесконечный цикл симуляции бактерии
+            pass
 
     def move(self, targetCoordinates):
         """Function for agent move"""
@@ -100,12 +102,11 @@ class Bacteria:
         if distance < 0.5:
             return
 
-        speedX = abs(self.coordinates[0] - targetCoordinates[0]) / (distance / self.speed.value) #Находим какой шаг нам надо совершать по x
-        speedY = abs(self.coordinates[1] - targetCoordinates[1]) / (distance / self.speed.value) #То же самое для y
+        speedX = abs(self.coordinates[0] - targetCoordinates[0]) / (
+                    distance / self.speed.value)  #Находим какой шаг нам надо совершать по x
+        speedY = abs(self.coordinates[1] - targetCoordinates[1]) / (distance / self.speed.value)  #То же самое для y
 
-        time.sleep(0.1) #Сон для регулировки скорости отображения
-
-        # print(f"{self.foodCoordinates, self.waterCoordinates} - Agent data")
+        time.sleep(0.1)  #Сон для регулировки скорости отображения
 
         if distance > 1:
             while True:
@@ -130,7 +131,7 @@ class Bacteria:
         if self.coordinates[1] < targetCoordinates[1]:
             self.coordinates[1] = self.coordinates[1] + speedY
         else:
-            self.coordinates[1] = self.coordinates[1] - speedY #Тут тоже ясно
+            self.coordinates[1] = self.coordinates[1] - speedY  #Тут тоже ясно
 
     def findDirection(self):
         """Function for finding a direction"""
@@ -146,7 +147,7 @@ class Bacteria:
             self.direction = random.choice([UP, RIGHT, LEFT])
         if self.coordinates[1] - 10 < 0:
             self.move([self.coordinates[0], self.coordinates[1] + self.speed.value])
-            self.direction = random.choice([DOWN, RIGHT, LEFT]) #Ограничения движения до стен
+            self.direction = random.choice([DOWN, RIGHT, LEFT])  #Ограничения движения до стен
 
         # print(self.randRotation)
 
@@ -157,15 +158,15 @@ class Bacteria:
         elif self.direction == DOWN:
             self.move([self.coordinates[0], self.coordinates[1] + self.speed.value])
         elif self.direction == UP:
-            self.move([self.coordinates[0], self.coordinates[1] - self.speed.value]) #Рандомное движение
+            self.move([self.coordinates[0], self.coordinates[1] - self.speed.value])  #Рандомное движение
 
     def vision(self, Coordinates):
         """Function to check whether a point is in the field of view"""
         returnValue = {}
 
-        for x, y in zip(Coordinates[::2], Coordinates[1::2]): #В x и y координаты через одну
+        for x, y in zip(Coordinates[::2], Coordinates[1::2]):  #В x и y координаты через одну
             distanceToTarget = self.calcDistance([x, y])
-            if distanceToTarget < 100: #Проверка на расстояние
+            if distanceToTarget < 100:  #Проверка на расстояние
                 returnValue[distanceToTarget] = [x, y]
         return returnValue
 
@@ -174,9 +175,9 @@ class Bacteria:
         distanceToCoordinatesList = self.vision(self.foodCoordinates)
 
         if distanceToCoordinatesList:
-            key = min(distanceToCoordinatesList) #Поиск самого близ. объекта
+            key = min(distanceToCoordinatesList)  #Поиск самого близ. объекта
 
-            closeFoodSource = distanceToCoordinatesList[key] #Получение координат из мэпы
+            closeFoodSource = distanceToCoordinatesList[key]  #Получение координат из мэпы
             self.move(closeFoodSource)
             if self.hungry - 30 <= 0:
                 self.hungry = 0
@@ -184,12 +185,12 @@ class Bacteria:
                 self.hungry -= 30
 
         else:
-            self.direction = random.choice([-2, -1, 1, 2]) #Рандомное направление
+            self.direction = random.choice([-2, -1, 1, 2])  #Рандомное направление
 
             while True:
                 distanceToCoordinatesList = self.vision(self.foodCoordinates)
                 if distanceToCoordinatesList: break
-                self.findDirection() #Движение
+                self.findDirection()  #Движение
             key = min(distanceToCoordinatesList)
 
             closeFoodSource = distanceToCoordinatesList[key]
@@ -232,3 +233,4 @@ class Bacteria:
 
     def goBreed(self) -> None:
         pass
+
