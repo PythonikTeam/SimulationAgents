@@ -9,7 +9,7 @@ BLUE = (0, 191, 255)
 
 
 class GUI:
-    def __init__(self, foodCoordinates, waterCoordinates, foodAndWaterAmount, animalsAmount):
+    def __init__(self, foodCoordinates, waterCoordinates, animalsAmount, amountProvisions):
         self.rectAnimal = {}
         self.rectWater = {}
         self.rectFood = {}
@@ -19,7 +19,7 @@ class GUI:
         self.sc = None
         self.foodCoordinates = foodCoordinates
         self.waterCoordinates = waterCoordinates
-        self.foodAndWaterAmount = foodAndWaterAmount
+        self.amountProvisions = amountProvisions
         self.animalsAmount = animalsAmount
 
     def createGUI(self):
@@ -35,7 +35,7 @@ class GUI:
         for r in range(0, self.animalsAmount):
             self.rectAnimal["rectAnimal" + str(r)] = self.animalObject.get_rect()
 
-        for j in range(0, self.foodAndWaterAmount):
+        for j in range(0, self.amountProvisions):
             if j == 0:
                 i = 0
             else: i = 2
@@ -58,7 +58,7 @@ class GUI:
 
         self.sc.fill(WHITE)
 
-        for j in range(0, self.foodAndWaterAmount):
+        for j in range(0, self.amountProvisions):
             self.sc.blit(self.food, self.rectFood["rectFood" + str(j)])
             self.sc.blit(self.water, self.rectWater["rectWater" + str(j)])
 
