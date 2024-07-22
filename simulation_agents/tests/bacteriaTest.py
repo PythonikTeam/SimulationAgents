@@ -1,14 +1,14 @@
-from main.bacteria import Bacteria
+import bacteria
 import unittest
-import main.GUI
 
 
 class TestBacteria(unittest.TestCase):
     def setUp(self):
-        self.testAgent = Bacteria([10, 10], [20, 20], [20, 20], 5)
+        self.testAgent = bacteria.Bacteria(None, [10, 10], 1, [30, 30],
+                                           2, 5, 5, False)
         self.testCoordinates = [20, 20]
 
-    def test_vision(self):
+    def test_distance(self):
         distance = self.testAgent.calcDistance(self.testCoordinates)
         self.assertEqual(distance, 14)
 
@@ -29,6 +29,7 @@ class TestBacteria(unittest.TestCase):
     def test_go_water(self):
         self.testAgent.goDrink()
         self.assertEqual(self.testAgent.coordinates, [20, 20])
+
 
 if __name__ == '__main__':
     unittest.main()
