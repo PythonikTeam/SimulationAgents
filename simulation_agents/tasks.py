@@ -1,11 +1,13 @@
-import logging
+from loguru import logger
 import math
-from decimal import Decimal
+import os
+import sys
 
 from metrics import metric
 
 
-logging.basicConfig(filename='logs/tasks.log', level=logging.INFO)
+os.remove("logs/tasks.log")
+logger.add("logs/tasks.log", format="{level}: {message}")
 
 
 class Task:
@@ -13,15 +15,15 @@ class Task:
     def __init__(self):
         Task.instances[self] = metric.counter
         metric.counter += 1
-        logging.info(f"{Task.instances[self]} task created")
+        logger.info(f"{Task.instances[self]} task created")
 
     def start(self):
-        logging.info(f"{Task.instances[self]} task started")
+        logger.info(f"{Task.instances[self]} task started")
 
 
     @staticmethod
     def distance(cords, targetCoords):
-        return math.sqrt(Decimal(f"{cords[0] - targetCoords[0]}") ** 2 + (Decimal(f"{cords[1] - targetCoords[1]}") ** 2))
+        return math.sqrt(cords[0] - targetCoords[0] ** 2 + cords[1] - targetCoords[1] ** 2)
     @staticmethod
     def vision(coordinates, targetCoords, visionArea):
         if Task.distance(coordinates, targetCoords) <= visionArea: return True
@@ -41,3 +43,8 @@ class Move(Task):
         self.coordinates[0] = self.target[0]
         self.coordinates[1] = self.target[1]
 
+class Eat(Task):
+    def __init__(self, coordinates):
+        super().__init__()
+
+        self.coordinates = coordinates

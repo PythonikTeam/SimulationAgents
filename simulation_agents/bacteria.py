@@ -1,8 +1,11 @@
-import logging
+from loguru import logger
+import os
 
 from genes import Gene, GeneCluster
 
-logging.basicConfig(level=logging.INFO, filename="logs/bacterias.log")
+
+os.remove("logs/bacterias.log")
+logger.add("logs/bacterias.log", format="{level}: {message}")
 
 
 class Bacteria:
